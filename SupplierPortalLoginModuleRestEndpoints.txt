@@ -1,0 +1,64 @@
+http://localhost:1010/swagger-ui/index.html#/
+
+
+Login REST ENDPOINTS
+====================================================================================================================================
+First Login
+
+http://localhost:1010//api/login/service/doFirstLogin
+
+		Request body - pCred (ProvisionalCredentials.java) - supplierid , tempPwd to be sent from UI
+		Response Body - pCred ( only message field to be used by UI )
+
+http://localhost:1010//api/login/service/doMandatoryPwdReset
+
+		provisional_credentials - gets updated ( newPwdSet = 'Y' )
+		@RequestBody - lc - New record inserted ( supplier id, pwd, registration status ) 
+		
+		In response body read "SUCCESS" and redirect user to next page
+	
+
+http://localhost:1010//api/login/service/register
+			@RequestBody RegistrationInfo ri (RegistrationInfo.java) - Supplier id , supplier name , landline ,mobile , email
+			Response Body
+
+====================================================================================================================================
+Forgot Pwd
+
+http://localhost:1010//api/login/service/forgotpwd
+
+@RequestParam String supplierId
+Response Body  SUCCESS / FAILURE - perform redirect to otp validation screen
+
+
+http://localhost:1010//api/login/service/validateOtp
+
+@RequestParam Integer otp,@RequestParam String supplierId
+Response Body [boolean true/false]
+
+http://localhost:1010//api/login/service/setNewPassword
+@RequestParam String supplierId,@RequestParam String password
+Response [boolean true/false]
+
+====================================================================================================================================
+Continue Registration
+
+http://localhost:1010//api/login/service/continueRegistration
+Request body - @RequestParam String registrationId
+Response body [1-Invalid Registration ID provided,2-Proceed to OTP Verification,3-Registration Complete - Proceed with login]
+
+http://localhost:1010//api/login/service/validateOtpContinueReg
+@RequestParam Integer otp,@RequestParam String registrationId
+
+Response
+[true-IN-PROGRESS-REG-2086878,   true-NOTSTARTED-REG-2086878]
+
+====================================================================================================================================
+Continue Onboarding
+
+http://localhost:1010//api/login/service/submitOnboardingDetails
+@Valid @RequestBody SupplierOnboarding so
+Response Body  SUCCESS / FAILURE
+
+
+http://localhost:1010//api/login/service/viewOnboardingDetails
