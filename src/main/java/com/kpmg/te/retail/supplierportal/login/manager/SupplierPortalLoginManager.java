@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.kpmg.te.retail.supplierportal.login.constants.SQLConstants;
 import com.kpmg.te.retail.supplierportal.login.dao.SupplierPortalLoginDao;
+import com.kpmg.te.retail.supplierportal.login.entity.AdminCred;
 import com.kpmg.te.retail.supplierportal.login.entity.LoginCredentials;
 import com.kpmg.te.retail.supplierportal.login.entity.ProvisionalCredentials;
 import com.kpmg.te.retail.supplierportal.login.entity.RegistrationInfo;
@@ -67,6 +68,7 @@ public class SupplierPortalLoginManager {
 		logger.info("SupplierPortalLoginManager: -> Begin User Registration Flow" + ri);
 		String regNum = "REG-"+loginUtils.generateRandRegNum();
 		supplierPortalLoginDao.updateRegistrationInfo(ri.getSupplierId(),ri.getSupplierName(),ri.getEmailId(),ri.getLandlineNum(),ri.getPhoneNum(),regNum,"IN-PROGRESS");
+		emailServiceUtils.sendRegIdToUser(ri.getSupplierId(),regNum,ri.getEmailId());
 		return regNum;
 	}
 	
@@ -75,11 +77,14 @@ public class SupplierPortalLoginManager {
 	/************************************************************************************************************************************************************************** */
 	/*													LOGIN MANAGEMENT - FORGOT PASSWORD BUSINESS LOGIC                                                                      */
 	/**************************************************************************************************************************************************************************/
-	public void forgotPwd(String supplierId) {
+	public String forgotPwd(String supplierId) {
 		logger.info("SupplierPortalLoginManager: -> The supplier ID is: " + supplierId);
 		String email = checkIfValidUser(supplierId);
 		if (email.trim() != "" && email != null) {
 			emailServiceUtils.sendOtpviamail(email);
+			return "SUCCESS";
+		}else {
+			return "FAILURE";
 		}
 	}
 
@@ -129,6 +134,21 @@ public class SupplierPortalLoginManager {
 		SupplierOnboarding so = new SupplierOnboarding();
 		so = supplierPortalLoginDao.getSupplierOnboardingDetails(registrationId);
 		return so;
+	}
+
+	public SupplierOnboarding updateSupplierOnboardingStatus(@Valid String supplierId, String supplierEmail) throws SQLException, ClassNotFoundException {
+		String updateStatus = supplierPortalLoginDao.updateSupplierOnboardingStatus(supplierId);
+		if(updateStatus.equalsIgnoreCase("SUCCESS")) {
+		AdminCred adminCred =	supplierPortalLoginDao.createFirstAdminUser(supplierEmail);
+		adminCred.setSupplierEmailId(supplierEmail);
+		emailServiceUtils.sendAdminEmailDetails(adminCred);
+		}
+		return null;
+	}
+
+	public String updateSupplierOnboardingMessage(@Valid String supplierId, String onboardingMessage) throws SQLException {
+		String updateStatus = supplierPortalLoginDao.updateSupplierOnboardingMessage(supplierId,onboardingMessage);
+		return updateStatus;
 	}
 
 }

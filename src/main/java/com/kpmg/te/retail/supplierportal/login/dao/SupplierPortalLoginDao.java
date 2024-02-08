@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kpmg.te.retail.supplierportal.login.constants.SQLConstants;
+import com.kpmg.te.retail.supplierportal.login.entity.AdminCred;
 import com.kpmg.te.retail.supplierportal.login.entity.ProvisionalCredentials;
 import com.kpmg.te.retail.supplierportal.login.entity.SupplierOnboarding;
 import com.kpmg.te.retail.supplierportal.login.manager.EmailServiceUtils;
+import com.kpmg.te.retail.supplierportal.login.utils.LoginUtils;
 
 import jakarta.validation.Valid;
 
@@ -23,6 +25,9 @@ public class SupplierPortalLoginDao {
 	
 	@Autowired
 	EmailServiceUtils emailServiceUtils;
+	
+	@Autowired
+	LoginUtils loginUtils;
 
 	private static final Logger logger = Logger.getLogger(SupplierPortalLoginDao.class.getName());
 	/************************************************************************************************************************************************************************** */
@@ -435,6 +440,79 @@ public class SupplierPortalLoginDao {
 			e.printStackTrace();
 		}
 		return so;
+	}
+
+	public String updateSupplierOnboardingStatus(@Valid String supplierId) throws SQLException {
+		Connection conn = null;
+		String updateStatus = null;
+		try {
+			conn = getConnectioDetails();
+			String onboardingStatus = "SUCCESS";
+			String query = "UPDATE SUPPLIER_PORTAL.LOGIN_CREDENTIALS SET ONBOARDINGSTATUS =' " + onboardingStatus + "' WHERE SUPPLIERID = ? ";
+			logger.info(query);
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, supplierId);
+			int updateStatusCode = pstmt.executeUpdate();
+			pstmt.close();
+			updateStatus = (updateStatusCode == 1) ? ("SUCCESS") : ("FAILURE");
+			logger.info("[C]SupplierPortalLoginDao::[M]updateOnboardingStatus::-> The onboarding status is set to:->"+ updateStatus);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeConnection(conn);
+		}
+		return updateStatus;
+	}
+
+	public AdminCred createFirstAdminUser(String supplierEmail) throws SQLException, ClassNotFoundException {
+		String creationStatus;
+		AdminCred adminCred = null;
+		Connection conn = getConnectioDetails();
+		String insertQuery = "INSERT INTO SUPPLIER_PORTAL.SUPPLIER_USER_MASTER(USER_ID, USER_NAME, USER_EMAIL, USER_MOBILE, USER_MAPPING,PASSWORD,DEFAULT_PASSWORD_FLAG,IS_ADMIN)"
+				+ " VALUES" + "(?, ?, ?, ?, ?, ?, ?, ?)";
+		logger.info(insertQuery);
+		String tempRandomPwd = loginUtils.randomPwdGenerate();
+		PreparedStatement pstmt = conn.prepareStatement(insertQuery);
+		pstmt.setString(1, "ADMIN");
+		pstmt.setString(2, "ADMIN");
+		pstmt.setString(3, "");
+		pstmt.setString(4, "");
+		pstmt.setString(5, "");
+		pstmt.setString(6, tempRandomPwd);
+		pstmt.setString(7, "Y");
+		pstmt.setString(8, "Y");
+		int updateStatusCode = pstmt.executeUpdate();
+		logger.info(Integer.toString(updateStatusCode));
+		creationStatus = (updateStatusCode == 1) ? ("SUCCESS") : ("FAILURE");
+		if(updateStatusCode ==1) {
+			adminCred = new AdminCred();
+			adminCred.setUserName("ADMIN");
+			adminCred.setAdminTempPwd(tempRandomPwd);
+			adminCred.setSupplierEmailId(supplierEmail);
+		}
+		pstmt.close();
+		return adminCred;
+	}
+
+	public String updateSupplierOnboardingMessage(@Valid String supplierId, String onboardingMessage) throws SQLException {
+		Connection conn = null;
+		String updateStatus = null;
+		try {
+			conn = getConnectioDetails();
+			String query = "UPDATE SUPPLIER_PORTAL.SUPPLIER_ONBOARDING SET ONBOARDING_MSG =' " + onboardingMessage + "' WHERE SUPPLIERID = ? ";
+			logger.info(query);
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, supplierId);
+			int updateStatusCode = pstmt.executeUpdate();
+			pstmt.close();
+			updateStatus = (updateStatusCode == 1) ? ("SUCCESS") : ("FAILURE");
+			logger.info("[C]SupplierPortalLoginDao::[M]updateSupplierOnboardingMessage::-> The onboarding status is set to:->"+ updateStatus);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeConnection(conn);
+		}
+		return updateStatus;
 	}
 	
 }

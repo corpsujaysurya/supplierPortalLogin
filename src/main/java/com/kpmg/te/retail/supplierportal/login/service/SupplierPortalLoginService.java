@@ -58,8 +58,9 @@ public class SupplierPortalLoginService {
 	/*													LOGIN MANAGEMENT - FORGOT PASSWORD REST END-POINTS                                                                     */
 	/**************************************************************************************************************************************************************************/
 	@RequestMapping(path = "/forgotpwd", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public void forgotPwd(@RequestParam String supplierId) throws ClassNotFoundException, SQLException {
-		 supplierPortalLoginManager.forgotPwd(supplierId);
+	public String forgotPwd(@RequestParam String supplierId) throws ClassNotFoundException, SQLException {
+		return supplierPortalLoginManager.forgotPwd(supplierId);
+		 
 	}
 	
 	@RequestMapping(path = "/validateOtp", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -97,5 +98,19 @@ public class SupplierPortalLoginService {
 	public SupplierOnboarding viewOnboardingDetails(@Valid @RequestParam String registrationId) throws ClassNotFoundException, SQLException {
 		 return supplierPortalLoginManager.retriveCustomerOnboardingDetails(registrationId);
 	}
+	/************************************************************************************************************************************************************************** */
+	/*													LOGIN MANAGEMENT - UPDATE ONBOARDING TO SUCCESS STATUS                                                                 */
+	/**************************************************************************************************************************************************************************/
+	@RequestMapping(path = "/updateOnboardingSuccess", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public SupplierOnboarding updateOnboardingSuccess(@Valid @RequestParam String supplierId,@RequestParam String supplierEmail) throws ClassNotFoundException, SQLException {
+		 return supplierPortalLoginManager.updateSupplierOnboardingStatus(supplierId,supplierEmail);
+	}
 	
+	/************************************************************************************************************************************************************************** */
+	/*													LOGIN MANAGEMENT - UPDATE ONBOARDING MESSAGE			                                                               */
+	/**************************************************************************************************************************************************************************/
+	@RequestMapping(path = "/updateOnboardingMessage", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public String updateOnboardingMessage(@Valid @RequestParam String supplierId,@RequestParam String onboardingMessage) throws ClassNotFoundException, SQLException {
+		 return supplierPortalLoginManager.updateSupplierOnboardingMessage(supplierId,onboardingMessage);
+	}
 }

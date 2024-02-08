@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.kpmg.te.retail.supplierportal.login.dao.SupplierPortalLoginDao;
+import com.kpmg.te.retail.supplierportal.login.entity.AdminCred;
 
 //import org.springframework.mail.javamail.JavaMailSender;
 //import org.springframework.mail.SimpleMailMessage;
@@ -71,6 +72,44 @@ public class EmailServiceUtils {
 			e.printStackTrace();
 			return "Error while Sending Mail";
 		}
+	}
+
+	public String sendAdminEmailDetails(AdminCred adminCred) {
+		try {
+			logger.info("[C]:EmailServiceUtils[M]sendAdminEmailDetails - " + adminCred.toString());
+			SimpleMailMessage mailMessage = new SimpleMailMessage();
+			mailMessage.setFrom(sender);
+			mailMessage.setTo(adminCred.getSupplierEmailId());
+			int otp = otpService.generateOTP();
+			logger.info("[C]:EmailServiceUtils - OTP " + otp);
+			mailMessage.setText("The USER NAME IS:- " + adminCred.getUserName() + "THE TEMP PASSWORD IS:-" + adminCred.getAdminTempPwd());
+			mailMessage.setSubject("SUPPLIER PORTAL: TEMPORARY ADMIN CREDENTIALS");
+			logger.info("[C]:EmailServiceUtils - mailmessage " + mailMessage.toString());
+			javaMailSender.send(mailMessage);
+
+			return "Mail Sent Successfully...";
+		} catch (Exception e) {
+			return "Error while Sending Mail";
+		}
+		
+	}
+
+	public String sendRegIdToUser(String supplierId, String regNum, String email) {
+		try {
+			logger.info("[C]:EmailServiceUtils[M]sendRegIdToUser");
+			SimpleMailMessage mailMessage = new SimpleMailMessage();
+			mailMessage.setFrom(sender);
+			mailMessage.setTo(email);
+			mailMessage.setText("The SUPPLIER ID IS:- " + supplierId + "THE REGISTRATION ID IS:-" + regNum);
+			mailMessage.setSubject("SUPPLIER PORTAL: REGISTRATION DETAILS");
+			logger.info("[C]:EmailServiceUtils - mailmessage " + mailMessage.toString());
+			javaMailSender.send(mailMessage);
+
+			return "Mail Sent Successfully...";
+		} catch (Exception e) {
+			return "Error while Sending Mail";
+		}
+		
 	}
 
 }
