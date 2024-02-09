@@ -149,7 +149,7 @@ public class SupplierPortalLoginDao {
 		Connection conn = null;
 		try {
 			conn = getConnectioDetails();
-			String query = "UPDATE SUPPLIER_PORTAL.LOGIN_CREDENTIALS SET SUPPLIERNAME = ?,SUPPLIEREMAIL = ?, LANDLINENUM=? , MOBILENUM = ?,REGISTRATIONID = ?, REGISTRATIONSTATUS = ? WHERE SUPPLIERID = ? ";
+			String query = "UPDATE SUPPLIER_PORTAL.LOGIN_CREDENTIALS SET SUPPLIERNAME = ?,SUPPLIEREMAIL = ?, LANDLINENUM=? , MOBILENUM = ?,REGISTRATIONID = ?, REGISTRATIONSTATUS = ?,ONBOARDINGSTATUS=? WHERE SUPPLIERID = ? ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, supplierName);
@@ -158,8 +158,10 @@ public class SupplierPortalLoginDao {
 			pstmt.setLong(4, mobileNum);
 			pstmt.setString(5, regNum);
 			pstmt.setString(6, regStatus);
-			pstmt.setString(7, supplierId);
-			pstmt.executeUpdate();
+			pstmt.setString(7, "IN-ACTIVE");
+			pstmt.setString(8, supplierId);
+			int updateStatusCode =  pstmt.executeUpdate();
+			logger.info("SSSSSSSSSSSSSSSSSSSS" + updateStatusCode);
 			pstmt.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -358,7 +360,7 @@ public class SupplierPortalLoginDao {
 			pstmt.setString(26, so.getState());
 			pstmt.setString(27, so.getPaymentMode());
 			pstmt.setString(28, so.getBranchName());
-			pstmt.setString(29, so.getOnboarding_status());
+			pstmt.setString(29, "IN-PROGRESS");
 			pstmt.setString(30, so.getRegsitration_id());
 			pstmt.setString(31, so.getRegsitration_pwd());
 			int updateStatusCode =pstmt.executeUpdate();
@@ -442,16 +444,16 @@ public class SupplierPortalLoginDao {
 		return so;
 	}
 
-	public String updateSupplierOnboardingStatus(@Valid String supplierId) throws SQLException {
+	public String updateSupplierOnboardingStatus(@Valid String registrationId) throws SQLException {
 		Connection conn = null;
 		String updateStatus = null;
 		try {
 			conn = getConnectioDetails();
-			String onboardingStatus = "SUCCESS";
-			String query = "UPDATE SUPPLIER_PORTAL.LOGIN_CREDENTIALS SET ONBOARDINGSTATUS =' " + onboardingStatus + "' WHERE SUPPLIERID = ? ";
+			String onboardingStatus = "COMPLETED";
+			String query = "UPDATE SUPPLIER_PORTAL.supplier_onboarding SET ONBOARDING_STATUS =' " + onboardingStatus + "' WHERE REGSITRATION_ID = ? ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
-			pstmt.setString(1, supplierId);
+			pstmt.setString(1, registrationId);
 			int updateStatusCode = pstmt.executeUpdate();
 			pstmt.close();
 			updateStatus = (updateStatusCode == 1) ? ("SUCCESS") : ("FAILURE");
@@ -494,15 +496,15 @@ public class SupplierPortalLoginDao {
 		return adminCred;
 	}
 
-	public String updateSupplierOnboardingMessage(@Valid String supplierId, String onboardingMessage) throws SQLException {
+	public String updateSupplierOnboardingMessage(@Valid String registrationId, String onboardingMessage) throws SQLException {
 		Connection conn = null;
 		String updateStatus = null;
 		try {
 			conn = getConnectioDetails();
-			String query = "UPDATE SUPPLIER_PORTAL.SUPPLIER_ONBOARDING SET ONBOARDING_MSG =' " + onboardingMessage + "' WHERE SUPPLIERID = ? ";
+			String query = "UPDATE SUPPLIER_PORTAL.SUPPLIER_ONBOARDING SET ONBOARDING_MSG =' " + onboardingMessage + "' WHERE REGSITRATION_ID = ? ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
-			pstmt.setString(1, supplierId);
+			pstmt.setString(1, registrationId);
 			int updateStatusCode = pstmt.executeUpdate();
 			pstmt.close();
 			updateStatus = (updateStatusCode == 1) ? ("SUCCESS") : ("FAILURE");
@@ -513,6 +515,58 @@ public class SupplierPortalLoginDao {
 			closeConnection(conn);
 		}
 		return updateStatus;
+	}
+
+	public String updateSupplierLoginTable(@Valid String registrationId) throws SQLException {
+		Connection conn = null;
+		String updateStatus = null;
+		String onboardingStatus = "COMPLETED";
+		try {
+			conn = getConnectioDetails();
+			String query = "UPDATE SUPPLIER_PORTAL.login_credentials SET ONBOARDINGSTATUS =' " + onboardingStatus + "' WHERE REGISTRATIONID = ? ";
+			logger.info(query);
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, registrationId);
+			int updateStatusCode = pstmt.executeUpdate();
+			pstmt.close();
+			updateStatus = (updateStatusCode == 1) ? ("COMPLETED") : ("IN-PROGRESS");
+			logger.info("[C]SupplierPortalLoginDao::[M]updateSupplierLoginTable::-> The onboarding status is set to:->"+ updateStatus);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeConnection(conn);
+		}
+		return updateStatus;
+		}
+
+	public String performLogin(@Valid String supplierId, String pwd) {
+		String dbPassword = null;
+		String onboardingStatus=null;
+		String concatVal = null;
+		try {
+			Connection conn = getConnectioDetails();
+			Statement st = conn.createStatement();
+			String query = "SELECT  PASSCODE,ONBOARDINGSTATUS FROM SUPPLIER_PORTAL.LOGIN_CREDENTIALS WHERE SUPPLIERID = '" + supplierId
+					+ '\'';
+			logger.info(query);
+			ResultSet rs = st.executeQuery(query);
+			while (rs.next()) {
+				if(rs.getString("passcode") !=null) {
+					dbPassword = rs.getString("passcode");
+					onboardingStatus = rs.getString("ONBOARDINGSTATUS");
+					if(onboardingStatus==null || onboardingStatus.trim().equalsIgnoreCase("")) {
+						onboardingStatus = "INVALID-USER";
+					}
+					concatVal = dbPassword.concat(":::").concat(onboardingStatus);
+				}
+			}
+			st.close();
+		} catch (ClassNotFoundException | SQLException e) {
+			logger.info("Got an exception! ");
+			e.printStackTrace();
+		}
+		
+		return concatVal;
 	}
 	
 }

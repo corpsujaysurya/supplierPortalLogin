@@ -136,9 +136,10 @@ public class SupplierPortalLoginManager {
 		return so;
 	}
 
-	public SupplierOnboarding updateSupplierOnboardingStatus(@Valid String supplierId, String supplierEmail) throws SQLException, ClassNotFoundException {
-		String updateStatus = supplierPortalLoginDao.updateSupplierOnboardingStatus(supplierId);
-		if(updateStatus.equalsIgnoreCase("SUCCESS")) {
+	public SupplierOnboarding updateSupplierOnboardingStatus(@Valid String registrationId, String supplierEmail) throws SQLException, ClassNotFoundException {
+		String updateStatus = supplierPortalLoginDao.updateSupplierOnboardingStatus(registrationId);
+		supplierPortalLoginDao.updateSupplierLoginTable(registrationId);
+		if(updateStatus.equalsIgnoreCase("COMPLETED")) {
 		AdminCred adminCred =	supplierPortalLoginDao.createFirstAdminUser(supplierEmail);
 		adminCred.setSupplierEmailId(supplierEmail);
 		emailServiceUtils.sendAdminEmailDetails(adminCred);
@@ -146,9 +147,36 @@ public class SupplierPortalLoginManager {
 		return null;
 	}
 
-	public String updateSupplierOnboardingMessage(@Valid String supplierId, String onboardingMessage) throws SQLException {
-		String updateStatus = supplierPortalLoginDao.updateSupplierOnboardingMessage(supplierId,onboardingMessage);
+	public String updateSupplierOnboardingMessage(@Valid String registrationId, String onboardingMessage) throws SQLException {
+		String updateStatus = supplierPortalLoginDao.updateSupplierOnboardingMessage(registrationId,onboardingMessage);
 		return updateStatus;
+	}
+
+	public String regularLogin(@Valid String supplierId, String pwd) {
+		String updateStatus;
+		String concatVal = supplierPortalLoginDao.performLogin(supplierId, pwd);
+		logger.info(concatVal);
+		if(concatVal.equals("INVALID-USER")) {
+			return concatVal;
+		}else {
+			String[] arrOfStr = concatVal.split(":::", 2);
+			String dbPassword = arrOfStr[0];
+			String onboardingStatus = arrOfStr[1];
+			if (onboardingStatus.equalsIgnoreCase("COMPLETED")) {
+				String decodedPwd = new String(Base64.getDecoder().decode(dbPassword));
+				logger.info(pwd+"-"+decodedPwd);
+				logger.info(pwd.hashCode() +":::::::::"+ decodedPwd.hashCode());
+				if(decodedPwd.equals(pwd)) {
+					updateStatus = "SUCCESS";
+				}else {
+					updateStatus = "FAIL";
+				}
+			} else {
+				updateStatus = "ONBOARDING-INCOMPLETE";
+			}
+			return updateStatus;
+		}
+		
 	}
 
 }

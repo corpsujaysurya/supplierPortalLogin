@@ -102,15 +102,29 @@ public class SupplierPortalLoginService {
 	/*													LOGIN MANAGEMENT - UPDATE ONBOARDING TO SUCCESS STATUS                                                                 */
 	/**************************************************************************************************************************************************************************/
 	@RequestMapping(path = "/updateOnboardingSuccess", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public SupplierOnboarding updateOnboardingSuccess(@Valid @RequestParam String supplierId,@RequestParam String supplierEmail) throws ClassNotFoundException, SQLException {
-		 return supplierPortalLoginManager.updateSupplierOnboardingStatus(supplierId,supplierEmail);
+	public SupplierOnboarding updateOnboardingSuccess(@Valid @RequestParam String registrationId,@RequestParam String supplierEmail) throws ClassNotFoundException, SQLException {
+		 return supplierPortalLoginManager.updateSupplierOnboardingStatus(registrationId,supplierEmail);
 	}
 	
 	/************************************************************************************************************************************************************************** */
 	/*													LOGIN MANAGEMENT - UPDATE ONBOARDING MESSAGE			                                                               */
 	/**************************************************************************************************************************************************************************/
 	@RequestMapping(path = "/updateOnboardingMessage", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String updateOnboardingMessage(@Valid @RequestParam String supplierId,@RequestParam String onboardingMessage) throws ClassNotFoundException, SQLException {
-		 return supplierPortalLoginManager.updateSupplierOnboardingMessage(supplierId,onboardingMessage);
+	public String updateOnboardingMessage(@Valid @RequestParam String registrationId,@RequestParam String onboardingMessage) throws ClassNotFoundException, SQLException {
+		 return supplierPortalLoginManager.updateSupplierOnboardingMessage(registrationId,onboardingMessage);
+	}
+	
+	@RequestMapping(path = "/updateOnboardingData", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public SupplierOnboarding updateOnboardingData(@Valid @RequestParam String supplierId,@RequestParam String supplierEmail) throws ClassNotFoundException, SQLException {
+		 return supplierPortalLoginManager.updateSupplierOnboardingStatus(supplierId,supplierEmail);
+		 //TO-DO PENDING - UPDATE ONBOARDING TABLE 
+	}
+	
+	/************************************************************************************************************************************************************************** */
+	/*													LOGIN MANAGEMENT - NORMAL LOGIN							                                                               */
+	/**************************************************************************************************************************************************************************/
+	@RequestMapping(path = "/regularLogin", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public String regularLogin(@Valid @RequestParam String supplierId,@RequestParam String pwd) throws ClassNotFoundException, SQLException {
+		 return supplierPortalLoginManager.regularLogin(supplierId,pwd);
 	}
 }
