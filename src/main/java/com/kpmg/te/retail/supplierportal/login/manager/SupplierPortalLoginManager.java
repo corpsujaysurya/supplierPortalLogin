@@ -12,6 +12,7 @@ import com.kpmg.te.retail.supplierportal.login.constants.SQLConstants;
 import com.kpmg.te.retail.supplierportal.login.dao.SupplierPortalLoginDao;
 import com.kpmg.te.retail.supplierportal.login.entity.AdminCred;
 import com.kpmg.te.retail.supplierportal.login.entity.LoginCredentials;
+import com.kpmg.te.retail.supplierportal.login.entity.OnboardingStatus;
 import com.kpmg.te.retail.supplierportal.login.entity.ProvisionalCredentials;
 import com.kpmg.te.retail.supplierportal.login.entity.RegistrationInfo;
 import com.kpmg.te.retail.supplierportal.login.entity.SupplierOnboarding;
@@ -115,12 +116,12 @@ public class SupplierPortalLoginManager {
 		return msg;
 	}
 	
-	public String validateOtpContRegis(Integer otp, String registrationId) {
-		String finalStatus;
+	public OnboardingStatus validateOtpContRegis(Integer otp, String registrationId) {
+		OnboardingStatus os;
 		logger.info("SupplierPortalLoginManager: -> OTP Validation begin");
-		finalStatus = supplierPortalLoginDao.validateOtpForContRegis(otp, registrationId);
-		logger.info("[C]SupplierPortalLoginManager::[M]validateOtpContRegis::->"+ finalStatus);
-		return finalStatus;
+		os = supplierPortalLoginDao.validateOtpForContRegis(otp, registrationId);
+		logger.info("[C]SupplierPortalLoginManager::[M]validateOtpContRegis::->"+ os.toString());
+		return os;
 	}
 
 	public String saveCustomerOnboardingDetails(@Valid SupplierOnboarding so) throws SQLException {
@@ -136,10 +137,10 @@ public class SupplierPortalLoginManager {
 		return so;
 	}
 
-	public SupplierOnboarding updateSupplierOnboardingStatus(@Valid String registrationId, String supplierEmail) throws SQLException, ClassNotFoundException {
+	public SupplierOnboarding updateSupplierOnboardingStatus(String supplierId, String registrationId, String supplierEmail) throws SQLException, ClassNotFoundException {
 		String updateStatus = supplierPortalLoginDao.updateSupplierOnboardingStatus(registrationId);
-		supplierPortalLoginDao.updateSupplierLoginTable(registrationId);
-		if(updateStatus.equalsIgnoreCase("COMPLETED")) {
+		supplierPortalLoginDao.updateSupplierLoginTable(supplierId);
+		if(updateStatus.equalsIgnoreCase("SUCCESS")) {
 		AdminCred adminCred =	supplierPortalLoginDao.createFirstAdminUser(supplierEmail);
 		adminCred.setSupplierEmailId(supplierEmail);
 		emailServiceUtils.sendAdminEmailDetails(adminCred);

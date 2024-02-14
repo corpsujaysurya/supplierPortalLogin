@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kpmg.te.retail.supplierportal.login.dao.SupplierPortalLoginDao;
 import com.kpmg.te.retail.supplierportal.login.entity.LoginCredentials;
+import com.kpmg.te.retail.supplierportal.login.entity.OnboardingStatus;
 import com.kpmg.te.retail.supplierportal.login.entity.ProvisionalCredentials;
 import com.kpmg.te.retail.supplierportal.login.entity.RegistrationInfo;
 import com.kpmg.te.retail.supplierportal.login.entity.SupplierOnboarding;
@@ -74,7 +75,7 @@ public class SupplierPortalLoginService {
 	}
 	
 	/************************************************************************************************************************************************************************** */
-	/*													LOGIN MANAGEMENT - CONTINUE REGISTRATION REST END-POINTS                                                                     */
+	/*													LOGIN MANAGEMENT - CONTINUE REGISTRATION REST END-POINTS                                                               */
 	/**************************************************************************************************************************************************************************/
 	@RequestMapping(path = "/continueRegistration", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String continueApplication(@RequestParam String registrationId) throws ClassNotFoundException, SQLException {
@@ -82,12 +83,12 @@ public class SupplierPortalLoginService {
 	}
 	
 	@RequestMapping(path = "/validateOtpContinueReg", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String validateOtpContinueReg(@RequestParam Integer otp,@RequestParam String registrationId) throws ClassNotFoundException, SQLException {
+	public OnboardingStatus validateOtpContinueReg(@RequestParam Integer otp,@RequestParam String registrationId) throws ClassNotFoundException, SQLException {
 		 return supplierPortalLoginManager.validateOtpContRegis(otp,registrationId);
 	}
 	
 	/************************************************************************************************************************************************************************** */
-	/*													LOGIN MANAGEMENT - CONTINUE ONBOARDING                                                                  */
+	/*													LOGIN MANAGEMENT - CONTINUE ONBOARDING                                                                                 */
 	/**************************************************************************************************************************************************************************/
 	@RequestMapping(path = "/submitOnboardingDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String submitOnboardingDetails(@Valid @RequestBody SupplierOnboarding so) throws ClassNotFoundException, SQLException {
@@ -97,13 +98,14 @@ public class SupplierPortalLoginService {
 	@RequestMapping(path = "/viewOnboardingDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public SupplierOnboarding viewOnboardingDetails(@Valid @RequestParam String registrationId) throws ClassNotFoundException, SQLException {
 		 return supplierPortalLoginManager.retriveCustomerOnboardingDetails(registrationId);
+		 // to be tested
 	}
 	/************************************************************************************************************************************************************************** */
 	/*													LOGIN MANAGEMENT - UPDATE ONBOARDING TO SUCCESS STATUS                                                                 */
 	/**************************************************************************************************************************************************************************/
 	@RequestMapping(path = "/updateOnboardingSuccess", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public SupplierOnboarding updateOnboardingSuccess(@Valid @RequestParam String registrationId,@RequestParam String supplierEmail) throws ClassNotFoundException, SQLException {
-		 return supplierPortalLoginManager.updateSupplierOnboardingStatus(registrationId,supplierEmail);
+	public SupplierOnboarding updateOnboardingSuccess(@Valid @RequestParam String supplierId,@RequestParam String registartionId,@RequestParam String supplierEmail) throws ClassNotFoundException, SQLException {
+		 return supplierPortalLoginManager.updateSupplierOnboardingStatus(supplierId,registartionId,supplierEmail);
 	}
 	
 	/************************************************************************************************************************************************************************** */
@@ -115,9 +117,10 @@ public class SupplierPortalLoginService {
 	}
 	
 	@RequestMapping(path = "/updateOnboardingData", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public SupplierOnboarding updateOnboardingData(@Valid @RequestParam String supplierId,@RequestParam String supplierEmail) throws ClassNotFoundException, SQLException {
-		 return supplierPortalLoginManager.updateSupplierOnboardingStatus(supplierId,supplierEmail);
+	public String updateOnboardingData(@Valid @RequestParam String supplierId,@RequestParam String supplierEmail) throws ClassNotFoundException, SQLException {
+		 //return supplierPortalLoginManager.updateSupplierOnboardingStatus(supplierId,supplierEmail);
 		 //TO-DO PENDING - UPDATE ONBOARDING TABLE 
+		 return "SUCCESS";
 	}
 	
 	/************************************************************************************************************************************************************************** */
