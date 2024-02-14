@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.kpmg.te.retail.supplierportal.login.constants.SQLConstants;
 import com.kpmg.te.retail.supplierportal.login.entity.AdminCred;
+import com.kpmg.te.retail.supplierportal.login.entity.OnboardingStatus;
 import com.kpmg.te.retail.supplierportal.login.entity.ProvisionalCredentials;
 import com.kpmg.te.retail.supplierportal.login.entity.SupplierOnboarding;
 import com.kpmg.te.retail.supplierportal.login.manager.EmailServiceUtils;
@@ -297,17 +298,28 @@ public class SupplierPortalLoginDao {
 		return registrationStatusMsg;
 	}
 	
-	public String validateOtpForContRegis(Integer otp, String registrationId) {
+	public OnboardingStatus validateOtpForContRegis(Integer otp, String registrationId) {
 		String validationStatus = null;
 		String onBoardingStatus = null;
-		String finalStatus = null;
+		String onboardingMsg =null;
+		OnboardingStatus os = new OnboardingStatus();
 		try {
 			long otpFromDb = 0;
 			Connection conn = getConnectioDetails();
 			Statement st = conn.createStatement();
+			Statement st1 = conn.createStatement();
 			String query = "SELECT  TEMP_OTP,ONBOARDINGSTATUS FROM SUPPLIER_PORTAL.LOGIN_CREDENTIALS WHERE REGISTRATIONID = '" + registrationId+ '\'';
+			
+			String query1 = "SELECT  ONBOARDING_MSG FROM SUPPLIER_PORTAL.supplier_onboarding WHERE REGSITRATION_ID = '" + registrationId+ '\'';
+			
+			
 			logger.info(query);
 			ResultSet rs = st.executeQuery(query);
+			ResultSet rs1 = st1.executeQuery(query1);
+			while(rs1.next()) {
+				 onboardingMsg = rs1.getString("ONBOARDING_MSG");
+			}
+			
 			while (rs.next()) {
 				otpFromDb = rs.getLong("TEMP_OTP");
 				onBoardingStatus = rs.getNString("ONBOARDINGSTATUS");
@@ -315,13 +327,16 @@ public class SupplierPortalLoginDao {
 			if (otpFromDb == otp) {
 				validationStatus = "true";
 			}
-			finalStatus = validationStatus.concat("-").concat(onBoardingStatus).concat("-").concat(registrationId);
+			os.setOnboardingStatus(onBoardingStatus);
+			os.setOtpValidationStatus(validationStatus);
+			os.setRegistrationId(registrationId);
+			os.setOnboardingMsg(onboardingMsg);
 ;			st.close();
 		} catch (ClassNotFoundException | SQLException e) {
 			logger.info("Got an exception! ");
 			e.printStackTrace();
 		}
-		return finalStatus;
+		return os;
 	}
 
 	public String saveCustomerOnboardingDetails(@Valid SupplierOnboarding so) throws SQLException {
@@ -496,13 +511,13 @@ public class SupplierPortalLoginDao {
 		return adminCred;
 	}
 
-	public String updateSupplierOnboardingMessage(@Valid String registrationId, String onboardingMessage) throws SQLException {
+	public String updateSupplierOnboardingMessage(String registrationId, String onboardingMessage) throws SQLException {
 		Connection conn = null;
 		String updateStatus = null;
 		try {
 			conn = getConnectioDetails();
 			String query = "UPDATE SUPPLIER_PORTAL.SUPPLIER_ONBOARDING SET ONBOARDING_MSG =' " + onboardingMessage + "' WHERE REGSITRATION_ID = ? ";
-			logger.info(query);
+			logger.info("1"+query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, registrationId);
 			int updateStatusCode = pstmt.executeUpdate();
@@ -517,16 +532,17 @@ public class SupplierPortalLoginDao {
 		return updateStatus;
 	}
 
-	public String updateSupplierLoginTable(@Valid String registrationId) throws SQLException {
+	public String updateSupplierLoginTable(String supplierId) throws SQLException {
 		Connection conn = null;
 		String updateStatus = null;
 		String onboardingStatus = "COMPLETED";
+		String registrationStatus = "COMPLETED";
 		try {
 			conn = getConnectioDetails();
-			String query = "UPDATE SUPPLIER_PORTAL.login_credentials SET ONBOARDINGSTATUS =' " + onboardingStatus + "' WHERE REGISTRATIONID = ? ";
+			String query = "UPDATE SUPPLIER_PORTAL.login_credentials SET ONBOARDINGSTATUS =' " + onboardingStatus + "',REGISTRATIONSTATUS='"+registrationStatus+"'"+ "WHERE SUPPLIERID = ? ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
-			pstmt.setString(1, registrationId);
+			pstmt.setString(1, supplierId);
 			int updateStatusCode = pstmt.executeUpdate();
 			pstmt.close();
 			updateStatus = (updateStatusCode == 1) ? ("COMPLETED") : ("IN-PROGRESS");
