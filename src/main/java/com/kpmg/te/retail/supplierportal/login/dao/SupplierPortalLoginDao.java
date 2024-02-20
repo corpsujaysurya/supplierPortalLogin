@@ -539,7 +539,7 @@ public class SupplierPortalLoginDao {
 		String registrationStatus = "COMPLETED";
 		try {
 			conn = getConnectioDetails();
-			String query = "UPDATE SUPPLIER_PORTAL.login_credentials SET ONBOARDINGSTATUS =' " + onboardingStatus + "',REGISTRATIONSTATUS='"+registrationStatus+"'"+ "WHERE SUPPLIERID = ? ";
+			String query = "UPDATE SUPPLIER_PORTAL.login_credentials SET ONBOARDINGSTATUS ='" + onboardingStatus + "',REGISTRATIONSTATUS='"+registrationStatus+"'"+ "WHERE SUPPLIERID = ? ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, supplierId);

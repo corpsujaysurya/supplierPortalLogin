@@ -51,8 +51,8 @@ public class SupplierPortalLoginService {
 	
 	
     @RequestMapping(path = "/register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public void registerUser(@Valid @RequestBody RegistrationInfo ri) throws ClassNotFoundException, SQLException {
-		 supplierPortalLoginManager.registerUser(ri);
+	public String registerUser(@Valid @RequestBody RegistrationInfo ri) throws ClassNotFoundException, SQLException {
+		 return supplierPortalLoginManager.registerUser(ri);
 	}
 	
 	/************************************************************************************************************************************************************************** */

@@ -156,7 +156,7 @@ public class SupplierPortalLoginManager {
 	public String regularLogin(@Valid String supplierId, String pwd) {
 		String updateStatus;
 		String concatVal = supplierPortalLoginDao.performLogin(supplierId, pwd);
-		logger.info(concatVal);
+		logger.info("concatVal is:- "+ concatVal);
 		if(concatVal.equals("INVALID-USER")) {
 			return concatVal;
 		}else {
