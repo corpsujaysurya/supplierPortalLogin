@@ -104,7 +104,8 @@ public class SupplierPortalLoginService {
 	/*													LOGIN MANAGEMENT - UPDATE ONBOARDING TO SUCCESS STATUS                                                                 */
 	/**************************************************************************************************************************************************************************/
 	@RequestMapping(path = "/updateOnboardingSuccess", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public SupplierOnboarding updateOnboardingSuccess(@Valid @RequestParam String supplierId,@RequestParam String registartionId,@RequestParam String supplierEmail) throws ClassNotFoundException, SQLException {
+	public SupplierOnboarding updateOnboardingSuccess(@Valid @RequestParam String supplierId,@RequestParam String registartionId,@RequestParam String supplierEmail)
+			throws ClassNotFoundException, SQLException {
 		 return supplierPortalLoginManager.updateSupplierOnboardingStatus(supplierId,registartionId,supplierEmail);
 	}
 	
@@ -117,10 +118,8 @@ public class SupplierPortalLoginService {
 	}
 	
 	@RequestMapping(path = "/updateOnboardingData", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String updateOnboardingData(@Valid @RequestParam String supplierId,@RequestParam String supplierEmail) throws ClassNotFoundException, SQLException {
-		 //return supplierPortalLoginManager.updateSupplierOnboardingStatus(supplierId,supplierEmail);
-		 //TO-DO PENDING - UPDATE ONBOARDING TABLE 
-		 return "SUCCESS";
+	public String updateOnboardingData(@Valid @RequestBody SupplierOnboarding so) throws ClassNotFoundException, SQLException {
+		 return supplierPortalLoginManager.updateSupplierOnboardingData(so);
 	}
 	
 	/************************************************************************************************************************************************************************** */

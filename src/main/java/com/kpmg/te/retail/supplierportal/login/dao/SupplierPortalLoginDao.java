@@ -51,7 +51,7 @@ public class SupplierPortalLoginDao {
 		try {
 			Connection conn = getConnectioDetails();
 			Statement st = conn.createStatement();
-			String query = "SELECT  * FROM SUPPLIER_PORTAL.PROVISIONAL_CREDENTIALS WHERE SUPPLIERID = '" + supplierId
+			String query = "SELECT  * FROM "+ SQLConstants.SCHEMA_NAME +"."+SQLConstants.PROVISIONAL_CREDENTIALS_TABLE +" WHERE SUPPLIERID = '" + supplierId
 					+ '\'';
 			logger.info(query);
 			ResultSet rs = st.executeQuery(query);
@@ -73,7 +73,7 @@ public class SupplierPortalLoginDao {
 		Connection conn = null;
 		try {
 			conn = getConnectioDetails();
-			String query = "UPDATE SUPPLIER_PORTAL.PROVISIONAL_CREDENTIALS SET ACTIVEFLAG = ?, MESSAGE=?, NEWPWDSETFLAG=? WHERE SUPPLIERID = ?  ";
+			String query = "UPDATE "+ SQLConstants.SCHEMA_NAME +"."+SQLConstants.PROVISIONAL_CREDENTIALS_TABLE +" SET ACTIVEFLAG = ?, MESSAGE=?, NEWPWDSETFLAG=? WHERE SUPPLIERID = ?  ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, "N");
@@ -95,7 +95,7 @@ public class SupplierPortalLoginDao {
 		Connection conn = null;
 		try {
 			conn = getConnectioDetails();
-			String query = "UPDATE SUPPLIER_PORTAL.PROVISIONAL_CREDENTIALS SET NEWPWDSETFLAG = ? WHERE SUPPLIERID = ?  ";
+			String query = "UPDATE "+ SQLConstants.SCHEMA_NAME +".PROVISIONAL_CREDENTIALS SET NEWPWDSETFLAG = ? WHERE SUPPLIERID = ?  ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, "Y");
@@ -113,7 +113,7 @@ public class SupplierPortalLoginDao {
 		Connection conn = null;
 		try {
 			conn = getConnectioDetails();
-			String query = "UPDATE SUPPLIER_PORTAL.PROVISIONAL_CREDENTIALS SET NEWPWDSETFLAG = ?,ACTIVEFLAG = ?, MESSAGE=? WHERE SUPPLIERID = ?  ";
+			String query = "UPDATE "+ SQLConstants.SCHEMA_NAME +".PROVISIONAL_CREDENTIALS SET NEWPWDSETFLAG = ?,ACTIVEFLAG = ?, MESSAGE=? WHERE SUPPLIERID = ?  ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, "N");
@@ -133,7 +133,7 @@ public class SupplierPortalLoginDao {
 			Connection conn = null;
 			try {
 				conn = getConnectioDetails();
-		        PreparedStatement pstmt = conn.prepareStatement( "INSERT INTO SUPPLIER_PORTAL.LOGIN_CREDENTIALS (SUPPLIERID,PASSCODE,REGISTRATIONSTATUS)" +" VALUES(?,?,?)");
+		        PreparedStatement pstmt = conn.prepareStatement( "INSERT INTO "+ SQLConstants.SCHEMA_NAME +".LOGIN_CREDENTIALS (SUPPLIERID,PASSCODE,REGISTRATIONSTATUS)" +" VALUES(?,?,?)");
 		        	 pstmt.setString(1, supplierId);
 		             pstmt.setString(2, encodedPwd);
 		             pstmt.setString(3, regStatus);
@@ -150,7 +150,7 @@ public class SupplierPortalLoginDao {
 		Connection conn = null;
 		try {
 			conn = getConnectioDetails();
-			String query = "UPDATE SUPPLIER_PORTAL.LOGIN_CREDENTIALS SET SUPPLIERNAME = ?,SUPPLIEREMAIL = ?, LANDLINENUM=? , MOBILENUM = ?,REGISTRATIONID = ?, REGISTRATIONSTATUS = ?,ONBOARDINGSTATUS=? WHERE SUPPLIERID = ? ";
+			String query = "UPDATE "+ SQLConstants.SCHEMA_NAME +".LOGIN_CREDENTIALS SET SUPPLIERNAME = ?,SUPPLIEREMAIL = ?, LANDLINENUM=? , MOBILENUM = ?,REGISTRATIONID = ?, REGISTRATIONSTATUS = ?,ONBOARDINGSTATUS=? WHERE SUPPLIERID = ? ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, supplierName);
@@ -178,7 +178,7 @@ public class SupplierPortalLoginDao {
 		try {
 			Connection conn = getConnectioDetails();
 			Statement st = conn.createStatement();
-			String query = "SELECT  * FROM SUPPLIER_PORTAL.LOGIN_CREDENTIALS WHERE SUPPLIERID = '" + supplierId
+			String query = "SELECT  * FROM "+ SQLConstants.SCHEMA_NAME +".LOGIN_CREDENTIALS WHERE SUPPLIERID = '" + supplierId
 					+ '\'';
 			logger.info(query);
 			ResultSet rs = st.executeQuery(query);
@@ -199,7 +199,7 @@ public class SupplierPortalLoginDao {
 		Connection conn = null;
 		try {
 			conn = getConnectioDetails();
-			String query = "UPDATE SUPPLIER_PORTAL.LOGIN_CREDENTIALS SET TEMP_OTP = ? WHERE SUPPLIEREMAIL = ? ";
+			String query = "UPDATE "+ SQLConstants.SCHEMA_NAME +".LOGIN_CREDENTIALS SET TEMP_OTP = ? WHERE SUPPLIEREMAIL = ? ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setInt(1, otp);
@@ -219,7 +219,7 @@ public class SupplierPortalLoginDao {
 			long otpFromDb = 0;
 			Connection conn = getConnectioDetails();
 			Statement st = conn.createStatement();
-			String query = "SELECT  TEMP_OTP FROM SUPPLIER_PORTAL.LOGIN_CREDENTIALS WHERE SUPPLIERID = '" + supplierId
+			String query = "SELECT  TEMP_OTP FROM "+ SQLConstants.SCHEMA_NAME +".LOGIN_CREDENTIALS WHERE SUPPLIERID = '" + supplierId
 					+ '\'';
 			logger.info(query);
 			ResultSet rs = st.executeQuery(query);
@@ -243,7 +243,7 @@ public class SupplierPortalLoginDao {
 		String updateStatus;
 		try {
 			conn = getConnectioDetails();
-			String query = "UPDATE SUPPLIER_PORTAL.LOGIN_CREDENTIALS SET PASSCODE = ? WHERE SUPPLIERID = ? ";
+			String query = "UPDATE "+ SQLConstants.SCHEMA_NAME +".LOGIN_CREDENTIALS SET PASSCODE = ? WHERE SUPPLIERID = ? ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, encodedPwd);
@@ -270,7 +270,7 @@ public class SupplierPortalLoginDao {
 		try {
 			Connection conn = getConnectioDetails();
 			Statement st = conn.createStatement();
-			String query = "SELECT  SUPPLIERID,REGISTRATIONSTATUS,SUPPLIEREMAIL FROM SUPPLIER_PORTAL.LOGIN_CREDENTIALS WHERE REGISTRATIONID = '" + registrationId+ '\'';
+			String query = "SELECT  SUPPLIERID,REGISTRATIONSTATUS,SUPPLIEREMAIL FROM "+ SQLConstants.SCHEMA_NAME +".LOGIN_CREDENTIALS WHERE REGISTRATIONID = '" + registrationId+ '\'';
 			logger.info(query);
 			ResultSet rs = st.executeQuery(query);
 			while (rs.next()) {
@@ -308,9 +308,9 @@ public class SupplierPortalLoginDao {
 			Connection conn = getConnectioDetails();
 			Statement st = conn.createStatement();
 			Statement st1 = conn.createStatement();
-			String query = "SELECT  TEMP_OTP,ONBOARDINGSTATUS FROM SUPPLIER_PORTAL.LOGIN_CREDENTIALS WHERE REGISTRATIONID = '" + registrationId+ '\'';
+			String query = "SELECT  TEMP_OTP,ONBOARDINGSTATUS FROM "+ SQLConstants.SCHEMA_NAME +".LOGIN_CREDENTIALS WHERE REGISTRATIONID = '" + registrationId+ '\'';
 			
-			String query1 = "SELECT  ONBOARDING_MSG FROM SUPPLIER_PORTAL.supplier_onboarding WHERE REGSITRATION_ID = '" + registrationId+ '\'';
+			String query1 = "SELECT  ONBOARDING_MSG FROM "+ SQLConstants.SCHEMA_NAME +".supplier_onboarding WHERE REGSITRATION_ID = '" + registrationId+ '\'';
 			
 			
 			logger.info(query);
@@ -322,7 +322,7 @@ public class SupplierPortalLoginDao {
 			
 			while (rs.next()) {
 				otpFromDb = rs.getLong("TEMP_OTP");
-				onBoardingStatus = rs.getNString("ONBOARDINGSTATUS");
+				onBoardingStatus = rs.getString("ONBOARDINGSTATUS");
 			}
 			if (otpFromDb == otp) {
 				validationStatus = "true";
@@ -345,7 +345,7 @@ public class SupplierPortalLoginDao {
 		try {
 			conn = getConnectioDetails();
 			PreparedStatement pstmt = conn.prepareStatement(
-					"INSERT INTO SUPPLIER_PORTAL.SUPPLIER_ONBOARDING (COMPANY_NAME,COMPANY_CONTACT_NO,GSTIN,TIN,CURRENCY,REGISTERED_ADDR,CORRESPONDANCE_ADDR,SPOC_NAME,SPOC_TITLE,SPOC_CONTACT,SPOC_EMAIL,LICENSE_DOC,INSURANCE_DOC,REGULATORY_DOC,LITIGATION_DOC,CREDIT_INFO_DOC,NDA_DOC,SUSTAINABILITY_DOC,BUSINESS_LICENSING_DOC,CANCELLED_CHEQUE_DOC,SUBCONTRACTOR_INFO_DOC,IFSC_CODE,ACCOUNT_NUMBER,BANK_NAME,CITY,STATE,PAYMENT_MODE,BRANCH_NAME,ONBOARDING_STATUS,REGSITRATION_ID,REGSITRATION_PWD)"
+					"INSERT INTO "+ SQLConstants.SCHEMA_NAME +".SUPPLIER_ONBOARDING (COMPANY_NAME,COMPANY_CONTACT_NO,GSTIN,TIN,CURRENCY,REGISTERED_ADDR,CORRESPONDANCE_ADDR,SPOC_NAME,SPOC_TITLE,SPOC_CONTACT,SPOC_EMAIL,LICENSE_DOC,INSURANCE_DOC,REGULATORY_DOC,LITIGATION_DOC,CREDIT_INFO_DOC,NDA_DOC,SUSTAINABILITY_DOC,BUSINESS_LICENSING_DOC,CANCELLED_CHEQUE_DOC,SUBCONTRACTOR_INFO_DOC,IFSC_CODE,ACCOUNT_NUMBER,BANK_NAME,CITY,STATE,PAYMENT_MODE,BRANCH_NAME,ONBOARDING_STATUS,REGSITRATION_ID,REGSITRATION_PWD)"
 							+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 			pstmt.setString(1, so.getCompany_name());
 			pstmt.setString(2, so.getCompany_contact_no());
@@ -395,7 +395,7 @@ public class SupplierPortalLoginDao {
 		try {
 			conn = getConnectioDetails();
 			String onboardingStatus = "IN-PROGRESS";
-			String query = "UPDATE SUPPLIER_PORTAL.LOGIN_CREDENTIALS SET ONBOARDINGSTATUS =' " + onboardingStatus + "' WHERE REGISTRATIONID = ? ";
+			String query = "UPDATE "+ SQLConstants.SCHEMA_NAME +".LOGIN_CREDENTIALS SET ONBOARDINGSTATUS =' " + onboardingStatus + "' WHERE REGISTRATIONID = ? ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, regsitration_id);
@@ -415,7 +415,7 @@ public class SupplierPortalLoginDao {
 		try {
 			Connection conn = getConnectioDetails();
 			Statement st = conn.createStatement();
-			String query = "SELECT  * FROM SUPPLIER_PORTAL.SUPPLIER_ONBOARDING WHERE REGSITRATION_ID = '" + registrationId+ '\'';
+			String query = "SELECT  * FROM "+ SQLConstants.SCHEMA_NAME +".SUPPLIER_ONBOARDING WHERE REGSITRATION_ID = '" + registrationId+ '\'';
 			logger.info(query);
 			ResultSet rs = st.executeQuery(query);
 			while (rs.next()) {
@@ -465,7 +465,7 @@ public class SupplierPortalLoginDao {
 		try {
 			conn = getConnectioDetails();
 			String onboardingStatus = "COMPLETED";
-			String query = "UPDATE SUPPLIER_PORTAL.supplier_onboarding SET ONBOARDING_STATUS =' " + onboardingStatus + "' WHERE REGSITRATION_ID = ? ";
+			String query = "UPDATE "+ SQLConstants.SCHEMA_NAME +".supplier_onboarding SET ONBOARDING_STATUS =' " + onboardingStatus + "' WHERE REGSITRATION_ID = ? ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, registrationId);
@@ -482,10 +482,9 @@ public class SupplierPortalLoginDao {
 	}
 
 	public AdminCred createFirstAdminUser(String supplierEmail) throws SQLException, ClassNotFoundException {
-		String creationStatus;
 		AdminCred adminCred = null;
 		Connection conn = getConnectioDetails();
-		String insertQuery = "INSERT INTO SUPPLIER_PORTAL.SUPPLIER_USER_MASTER(USER_ID, USER_NAME, USER_EMAIL, USER_MOBILE, USER_MAPPING,PASSWORD,DEFAULT_PASSWORD_FLAG,IS_ADMIN)"
+		String insertQuery = "INSERT INTO "+ SQLConstants.SCHEMA_NAME +".SUPPLIER_USER_MASTER(USER_ID, USER_NAME, USER_EMAIL, USER_MOBILE, USER_MAPPING,PASSWORD,DEFAULT_PASSWORD_FLAG,IS_ADMIN)"
 				+ " VALUES" + "(?, ?, ?, ?, ?, ?, ?, ?)";
 		logger.info(insertQuery);
 		String tempRandomPwd = loginUtils.randomPwdGenerate();
@@ -500,7 +499,6 @@ public class SupplierPortalLoginDao {
 		pstmt.setString(8, "Y");
 		int updateStatusCode = pstmt.executeUpdate();
 		logger.info(Integer.toString(updateStatusCode));
-		creationStatus = (updateStatusCode == 1) ? ("SUCCESS") : ("FAILURE");
 		if(updateStatusCode ==1) {
 			adminCred = new AdminCred();
 			adminCred.setUserName("ADMIN");
@@ -516,7 +514,7 @@ public class SupplierPortalLoginDao {
 		String updateStatus = null;
 		try {
 			conn = getConnectioDetails();
-			String query = "UPDATE SUPPLIER_PORTAL.SUPPLIER_ONBOARDING SET ONBOARDING_MSG =' " + onboardingMessage + "' WHERE REGSITRATION_ID = ? ";
+			String query = "UPDATE "+ SQLConstants.SCHEMA_NAME +".SUPPLIER_ONBOARDING SET ONBOARDING_MSG =' " + onboardingMessage + "' WHERE REGSITRATION_ID = ? ";
 			logger.info("1"+query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, registrationId);
@@ -539,7 +537,7 @@ public class SupplierPortalLoginDao {
 		String registrationStatus = "COMPLETED";
 		try {
 			conn = getConnectioDetails();
-			String query = "UPDATE SUPPLIER_PORTAL.login_credentials SET ONBOARDINGSTATUS ='" + onboardingStatus + "',REGISTRATIONSTATUS='"+registrationStatus+"'"+ "WHERE SUPPLIERID = ? ";
+			String query = "UPDATE "+ SQLConstants.SCHEMA_NAME +".login_credentials SET ONBOARDINGSTATUS ='" + onboardingStatus + "',REGISTRATIONSTATUS='"+registrationStatus+"'"+ "WHERE SUPPLIERID = ? ";
 			logger.info(query);
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, supplierId);
@@ -562,7 +560,7 @@ public class SupplierPortalLoginDao {
 		try {
 			Connection conn = getConnectioDetails();
 			Statement st = conn.createStatement();
-			String query = "SELECT  PASSCODE,ONBOARDINGSTATUS FROM SUPPLIER_PORTAL.LOGIN_CREDENTIALS WHERE SUPPLIERID = '" + supplierId
+			String query = "SELECT  PASSCODE,ONBOARDINGSTATUS FROM "+ SQLConstants.SCHEMA_NAME +".LOGIN_CREDENTIALS WHERE SUPPLIERID = '" + supplierId
 					+ '\'';
 			logger.info(query);
 			ResultSet rs = st.executeQuery(query);
@@ -584,5 +582,28 @@ public class SupplierPortalLoginDao {
 		
 		return concatVal;
 	}
-	
+
+
+	public String deleteSupplierOnboardingData(String regsitration_id) throws SQLException {
+		Connection conn = null;
+		String updateStatus = null;
+		try {
+			conn = getConnectioDetails();
+			String query = "DELETE FROM "+ SQLConstants.SCHEMA_NAME +".LOGIN_CREDENTIALS WHERE REGISTRATION_ID = ? ";
+			logger.info(query);
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, regsitration_id);
+			int updateStatusCode = pstmt.executeUpdate();
+			pstmt.close();
+			updateStatus = (updateStatusCode == 1) ? ("SUCCESS") : ("FAILURE");
+			logger.info(
+					"[C]SupplierPortalLoginDao::[M]deleteSupplierOnboardingData::-> The supplier deletion status is set to:->"
+							+ updateStatus);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeConnection(conn);
+		}
+		return updateStatus;
+	}
 }
